@@ -170,7 +170,7 @@ public class AutoCreateCode {
     private void createEntityFile(String basePackage, String module, String tableName, List<Field> list, boolean override) throws IOException {
 
         // 数据对象(DO)
-        String entiryPackage = basePackage + ".service";
+        String entiryPackage = basePackage;// + ".service";
         String entityDir = baseDir + StringUtils.replace(entiryPackage, ".", "\\");
         if (StringUtils.isNotBlank(module)) {
             entityDir = entityDir + "\\" + module + "\\entity";
@@ -315,10 +315,10 @@ public class AutoCreateCode {
         return result;
     }
     private void createDaoFile(String basePackage, String module, String tableName, List<Field> list, boolean override) {
-        String daoPackage = basePackage + ".service";
-        String providerPackage = basePackage + ".service";
-        String doPackage = basePackage + ".service";
-        String entityPackage = basePackage + ".service";
+        String daoPackage = basePackage ;//+ ".service";
+        String providerPackage = basePackage;// + ".service";
+        String doPackage = basePackage ;//+ ".service";
+        String entityPackage = basePackage ;//+ ".service";
 
         String daoDir = baseDir + StringUtils.replace(daoPackage, ".", "\\");
         String providerDir = baseDir + StringUtils.replace(providerPackage, ".", "\\");
@@ -374,7 +374,7 @@ public class AutoCreateCode {
         sb.append("import " + providerPackage + ".").append(providerName).append(";").append(this.separator);
         sb.append(this.separator);
 
-        sb.append("import java.util.List;;").append(this.separator);
+        sb.append("import java.util.List;").append(this.separator);
 
         sb.append(this.separator);
 
@@ -458,7 +458,7 @@ public class AutoCreateCode {
         sb2.append(this.separator);
         sb2.append("import org.slf4j.Logger;").append(this.separator);
         sb2.append("import org.slf4j.LoggerFactory;").append(this.separator);
-        sb2.append("import org.apache.commons.lang3.StringUtils;").append(this.separator);
+        sb2.append("import org.springframework.util.StringUtils;").append(this.separator);
         sb2.append(this.separator);
 
         sb2.append("import " + entityPackage + "." + doName + ";").append(this.separator);
@@ -478,7 +478,7 @@ public class AutoCreateCode {
                 continue;
             }
             if (StringUtils.equals(this.typeTransfer(f.getType()), "String")) {
-                sb2.append("        if (StringUtils.isNotBlank(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
+                sb2.append("        if (!StringUtils.isEmpty(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
             } else {
                 sb2.append("        if (" + doVariable + "." + this.getMethodName(f) + "() != null) {").append(this.separator);
             }
@@ -507,7 +507,7 @@ public class AutoCreateCode {
         sb2.append("        FROM(TABLE_NAME);").append(this.separator);
         for (Field f : list) {
             if (StringUtils.equals(this.typeTransfer(f.getType()), "String")) {
-                sb2.append("        if (StringUtils.isNotBlank(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
+                sb2.append("        if (!StringUtils.isEmpty(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
             } else {
                 sb2.append("        if (" + doVariable + "." + this.getMethodName(f) + "() != null) {").append(this.separator);
             }
@@ -526,7 +526,7 @@ public class AutoCreateCode {
         sb2.append("        FROM(TABLE_NAME);").append(this.separator);
         for (Field f : list) {
             if (StringUtils.equals(this.typeTransfer(f.getType()), "String")) {
-                sb2.append("        if (StringUtils.isNotBlank(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
+                sb2.append("        if (!StringUtils.isEmpty(" + doVariable + "." + this.getMethodName(f) + "())){").append(this.separator);
             } else {
                 sb2.append("        if (" + doVariable + "." + this.getMethodName(f) + "() != null) {").append(this.separator);
             }
@@ -544,10 +544,10 @@ public class AutoCreateCode {
     private void createServiceFile(String basePackage, String module, String tableName, List<Field> list, boolean override) throws IOException {
 
         // 数据对象(DO)
-        String servicePackage = basePackage + ".service";
+        String servicePackage = basePackage;// + ".service";
         String serviceDir = baseDir + StringUtils.replace(servicePackage, ".", "\\");
-        String daoPackage = basePackage + ".service";
-        String doPackage = basePackage + ".service";
+        String daoPackage = basePackage ;//+ ".service";
+        String doPackage = basePackage ;//+ ".service";
         if (StringUtils.isNotBlank(module)) {
             daoPackage = daoPackage + "." + module + "." + "dao";
             doPackage = doPackage + "." + module + "." + "entity";
@@ -577,7 +577,7 @@ public class AutoCreateCode {
         sb.append(this.separator);
 
         sb.append("import java.util.List;").append(this.separator);
-        sb.append("import java.util.Map;").append(this.separator);
+        //sb.append("import java.util.Map;").append(this.separator);
         sb.append("import org.slf4j.Logger;").append(this.separator);
         sb.append("import org.slf4j.LoggerFactory;").append(this.separator);
         sb.append("import org.springframework.beans.factory.annotation.Autowired;").append(this.separator);
@@ -586,7 +586,7 @@ public class AutoCreateCode {
         sb.append("import " + doPackage + "." + doName + ";").append(this.separator);
 
         sb.append("import com.hshb.core.base.BaseService;").append(this.separator);
-        sb.append("import com.hshb.core.base.ResultDTO;").append(this.separator);
+        // sb.append("import com.hshb.core.base.ResultDTO;").append(this.separator);
         sb.append("import com.hshb.core.base.ResultPageDTO;").append(this.separator);
 
         sb.append(this.separator);
@@ -667,11 +667,11 @@ public class AutoCreateCode {
 
         String actionPackage = basePackage + ".web";
         String actionDir = baseDir + StringUtils.replace(actionPackage, ".", "\\");
-        String servicePackage = basePackage + ".service";
-        String doPackage = basePackage + ".service";
-        String entityPackage = basePackage + ".service";
+        String servicePackage = basePackage;// + ".service";
+        String doPackage = basePackage ;//+ ".service";
+        String entityPackage = basePackage ;//+ ".service";
         if (StringUtils.isNotBlank(module)) {
-            actionDir = actionDir + "\\" + module;
+            actionDir = actionDir ;//+ "\\" + module;
             actionPackage = actionPackage + "." + module;
             servicePackage = servicePackage + "." + module;
             doPackage = doPackage + "." + module;
@@ -801,7 +801,7 @@ public class AutoCreateCode {
     private void createBizFile(String basePackage, String module, String tableName, List<Field> list, boolean override) throws IOException {
 
         // 数据对象(DO)
-        String bizPackage = basePackage + ".service";
+        String bizPackage = basePackage ;//+ ".service";
         String bizDir = baseDir + StringUtils.replace(bizPackage, ".", "\\");
         if (StringUtils.isNotBlank(module)) {
             bizDir = bizDir + "\\" + module;
