@@ -15,7 +15,7 @@ public class CodeGen {
         auto.setOverride(true);
 
         //auto.init("com.hshb.trading", "third.ticket", "t_sys_msg");
-        auto.init("com.hshb.web.site", "module.qa", "site_question_type");
+        auto.init("com.hshb.web.auth", "module.sys", "sys_user");
         
     }
 }
