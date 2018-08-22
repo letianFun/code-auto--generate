@@ -16,6 +16,7 @@ public class CodeGen {
 
         //auto.init("com.hshb.trading", "third.ticket", "t_sys_msg");
         auto.init("com.hshb.web", "service.community", "house_community");
+
         
     }
 }
