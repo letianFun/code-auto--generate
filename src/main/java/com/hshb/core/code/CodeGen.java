@@ -6,7 +6,7 @@ public class CodeGen {
 
         //AutoCreateCode auto = new AutoCreateCode("192.168.1.110", "fnsco_big_data", "root", "123456");
         //AutoCreateCode auto = new AutoCreateCode("192.168.1.110", "fnsco_risk_data", "root", "123456");
-        AutoCreateCode auto = new AutoCreateCode("192.168.1.33", "hzwebsite", "root", "123456");
+        AutoCreateCode auto = new AutoCreateCode("192.168.1.5", "hbwebsite", "hbweb", "hbweb!2#4");
         //AutoCreateCode auto = new AutoCreateCode("192.168.1.110", "fnsco_big_data", "root", "123456");
         //AutoCreateCode auto = new AutoCreateCode("192.168.1.110", "hb-withhold-platform", "root", "123456");
         auto.setCreateBiz(false);
@@ -15,7 +15,7 @@ public class CodeGen {
         auto.setOverride(true);
 
         //auto.init("com.hshb.trading", "third.ticket", "t_sys_msg");
-        auto.init("com.hshb", "member", "member_info");
+        auto.init("com.hshb.web", "service.community", "house_community");
         
     }
 }
