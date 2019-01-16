@@ -10,8 +10,6 @@ public class CodeGen {
         auto.setCreateService(false);
         auto.setOverride(true);
         //auto.init("com.hshb", "estate", "common_estate");
-        auto.init("com.fqkj.base", "customColumns", "common_custom_columns");
-
-
+        auto.init("com.fqkj.house", "secondHouse", "common_custom_columns");
     }
 }
