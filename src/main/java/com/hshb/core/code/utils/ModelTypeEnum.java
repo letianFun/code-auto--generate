@@ -8,12 +8,12 @@ package com.hshb.core.code.utils;
  */
 public enum ModelTypeEnum {
 
-    DO("DO","entity"), //数据库对象
-    VO("VO","vo"),//视图对象
-    DTO("DTO","dto"),//数据传输对象
-    BO("BO","bo");//业务对象
+    DO("DO", "entity"), //数据库对象
+    VO("VO", "vo"),//视图对象
+    DTO("DTO", "dto"),//数据传输对象
+    BO("BO", "bo");//业务对象
 
-    private  String key;
+    private String key;
 
     private String value;
 

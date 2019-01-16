@@ -2,7 +2,6 @@ package com.hshb.core.code;
 
 import com.hshb.core.code.utils.FileUtils;
 import com.hshb.core.code.utils.ModelTypeEnum;
-import com.hshb.core.code.utils.ModelTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,40 +17,40 @@ import java.util.*;
 
 public class AutoCreateCode {
 
-    private Logger                     logger          = Logger.getLogger(this.getClass());
+    private Logger logger = Logger.getLogger(this.getClass());
 
     // 分隔符
-    private static String              separator       = FileUtils.separator;
+    private static String separator = FileUtils.separator;
 
     // 项目根目录
-    private String                     baseDir         = System.getProperty("user.dir") + "\\src\\main\\java\\";
+    private String baseDir = System.getProperty("user.dir") + "\\src\\main\\java\\";
 
     // 数据库类型和java类型映射
-    private static Map<String, String> typeMap         = new HashMap<>();
+    private static Map<String, String> typeMap = new HashMap<>();
 
     // 是否创建action代码
-    private boolean                    isCreateAction  = true;
+    private boolean isCreateAction = true;
 
     // 是否创建biz代码
-    private boolean                    isCreateBiz     = true;
+    private boolean isCreateBiz = true;
 
     // 是否创建service代码
-    private boolean                    isCreateService = true;
+    private boolean isCreateService = true;
 
     // 是否覆盖已有代码
-    private boolean                    override        = false;
+    private boolean override = false;
 
-    private DriverManagerDataSource    ds;
+    private DriverManagerDataSource ds;
 
     //注释
-    private static StringBuilder ANNOTATION_SB=new StringBuilder();
+    private static StringBuilder ANNOTATION_SB = new StringBuilder();
 
-    private final  static  SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
     public AutoCreateCode(String host, String dbName, String user, String pwd) throws ClassNotFoundException, SQLException {
         ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setUrl("jdbc:mysql://" + host + ":3306/" + dbName + "?characterEncoding=utf-8");
+        ds.setUrl("jdbc:mysql://" + host + ":3306/" + dbName + "?characterEncoding=utf-8&useSSL=false");
         ds.setUsername(user);
         ds.setPassword(pwd);
     }
@@ -70,24 +69,23 @@ public class AutoCreateCode {
         typeMap.put("bigint unsigned", "Long");
         typeMap.put("tinytext", "String");
         typeMap.put("mediumtext", "String");
-        typeMap.put("smallint","Integer");
-        typeMap.put("double","Double");
-        typeMap.put("double unsigned","Double");
-        typeMap.put("int unsigned zerofill","Integer");
-        typeMap.put("date","Date");
-        typeMap.put("int unsigned","Integer");
-        typeMap.put("float","Float");
-        typeMap.put("bit","Boolean");
+        typeMap.put("smallint", "Integer");
+        typeMap.put("double", "Double");
+        typeMap.put("double unsigned", "Double");
+        typeMap.put("int unsigned zerofill", "Integer");
+        typeMap.put("date", "Date");
+        typeMap.put("int unsigned", "Integer");
+        typeMap.put("float", "Float");
+        typeMap.put("bit", "Boolean");
     }
 
     /**
      * 根据数据表创建DAO,DO
-     * 
+     *
      * @param basePackage
      * @param module
      * @param tableName
-     * @param override
-     *            true表示覆盖原先的;false表示不覆盖,如果文件已存在则直接结束
+     * @param override    true表示覆盖原先的;false表示不覆盖,如果文件已存在则直接结束
      */
     public void init(String basePackage, String module, String tableName) throws IOException, SQLException {
         if (StringUtils.isBlank(basePackage) || StringUtils.isBlank(tableName)) {
@@ -112,8 +110,8 @@ public class AutoCreateCode {
         }
         if (list.size() > 0) {
             this.createEntityFile(basePackage, module, tableName, list, override, ModelTypeEnum.DO);
-            this.createEntityFile(basePackage, module, tableName, list, override,ModelTypeEnum.VO);
-            this.createEntityFile(basePackage, module, tableName, list, override,ModelTypeEnum.DTO);
+            this.createEntityFile(basePackage, module, tableName, list, override, ModelTypeEnum.VO);
+            this.createEntityFile(basePackage, module, tableName, list, override, ModelTypeEnum.DTO);
             this.createDaoFile(basePackage, module, tableName, list, override);
             if (this.isCreateService) {
                 this.createServiceFile(basePackage, module, tableName, list, override);
@@ -187,8 +185,8 @@ public class AutoCreateCode {
         String entiryPackage = basePackage;// + ".service";
         String entityDir = baseDir + StringUtils.replace(entiryPackage, ".", "\\");
         if (StringUtils.isNotBlank(module)) {
-            entityDir = entityDir + "\\" + module + "\\"+modelTypeEnum.getValue();
-            entiryPackage = entiryPackage + "." + module + "."+modelTypeEnum.getValue();
+            entityDir = entityDir + "\\" + module + "\\" + modelTypeEnum.getValue();
+            entiryPackage = entiryPackage + "." + module + "." + modelTypeEnum.getValue();
         }
         FileUtils.createAllFolder(entityDir);
 
@@ -313,26 +311,27 @@ public class AutoCreateCode {
         sb.reverse();
         boolean result = false;
         sb.append("    @Results({");
-        int j=0;
+        int j = 0;
         for (int i = 0; i < list.size(); i++) {
             Field f = list.get(i);
             if (!f.getColumn().equals(f.getName())) {
                 result = true;
-                if(j>0){
+                if (j > 0) {
                     sb.append(",");
                 }
-                sb.append("@Result( column = \""+f.column+"\",property = \""+f.name+"\")");
+                sb.append("@Result( column = \"" + f.column + "\",property = \"" + f.name + "\")");
                 j++;
             }
         }
         sb.append(" })");
         return result;
     }
+
     private void createDaoFile(String basePackage, String module, String tableName, List<Field> list, boolean override) {
-        String daoPackage = basePackage ;//+ ".service";
+        String daoPackage = basePackage;//+ ".service";
         String providerPackage = basePackage;// + ".service";
-        String doPackage = basePackage ;//+ ".service";
-        String entityPackage = basePackage ;//+ ".service";
+        String doPackage = basePackage;//+ ".service";
+        String entityPackage = basePackage;//+ ".service";
 
         String daoDir = baseDir + StringUtils.replace(daoPackage, ".", "\\");
         String providerDir = baseDir + StringUtils.replace(providerPackage, ".", "\\");
@@ -395,19 +394,19 @@ public class AutoCreateCode {
         sb.append("public interface ").append(daoName).append(" {").append(separator).append(separator);
 
         StringBuffer sb1 = new StringBuffer();
-        boolean flag = getUpperColumn(list,sb1);
+        boolean flag = getUpperColumn(list, sb1);
         // insert
-        if(flag){
+        if (flag) {
             sb.append(sb1.toString());
             sb.append(separator);
         }
-        
+
         // getById
         sb.append("    @Select(\"SELECT * FROM " + tableName + " WHERE id = #{id}\")").append(separator);
         sb.append("    " + doName + " getById(@Param(\"id\") int id);").append(separator);
         sb.append(separator);
-        
-        
+
+
         sb.append("    @Insert(\"INSERT into " + tableName + "(");
         for (int i = 0; i < list.size(); i++) {
             Field f = list.get(i);
@@ -439,18 +438,18 @@ public class AutoCreateCode {
         // UPDATE
         sb.append("    @UpdateProvider(type = " + providerName + ".class, method = \"update\")").append(separator);
         sb.append("    int update(@Param(\"" + doVariable + "\") " + this.tableNameTransfer(tableName, true) + "DO " + " " + this.tableNameTransfer(tableName, false) + ");")
-            .append(separator);
+                .append(separator);
         sb.append(separator);
 
-        if(flag){
+        if (flag) {
             sb.append(sb1.toString());
             sb.append(separator);
         }
         // PAGE
         sb.append("    @SelectProvider(type = " + providerName + ".class, method = \"pageList\")").append(separator);
         sb.append("    List<" + doName + "> pageList(@Param(\"" + doVariable + "\") " + doName + " " + this.tableNameTransfer(tableName, false)
-                  + ", @Param(\"pageNum\") Integer pageNum, @Param(\"pageSize\") Integer pageSize);")
-            .append(separator);
+                + ", @Param(\"pageNum\") Integer pageNum, @Param(\"pageSize\") Integer pageSize);")
+                .append(separator);
         sb.append(separator);
 
         sb.append("    @SelectProvider(type = " + providerName + ".class, method = \"pageListCount\")").append(separator);
@@ -489,6 +488,7 @@ public class AutoCreateCode {
         sb2.append("        return new SQL() {{").append(separator);
         sb2.append("        UPDATE(TABLE_NAME);").append(separator);
         for (Field f : list) {
+
             if (StringUtils.equals(f.getName(), "id")) {
                 continue;
             }
@@ -561,8 +561,8 @@ public class AutoCreateCode {
         // 数据对象(DO)
         String servicePackage = basePackage;// + ".service";
         String serviceDir = baseDir + StringUtils.replace(servicePackage, ".", "\\");
-        String daoPackage = basePackage ;//+ ".service";
-        String doPackage = basePackage ;//+ ".service";
+        String daoPackage = basePackage;//+ ".service";
+        String doPackage = basePackage;//+ ".service";
         if (StringUtils.isNotBlank(module)) {
             daoPackage = daoPackage + "." + module + "." + "dao";
             doPackage = doPackage + "." + module + "." + "entity";
@@ -689,10 +689,10 @@ public class AutoCreateCode {
         String actionPackage = basePackage + ".web";
         String actionDir = baseDir + StringUtils.replace(actionPackage, ".", "\\");
         String servicePackage = basePackage;// + ".service";
-        String doPackage = basePackage ;//+ ".service";
-        String entityPackage = basePackage ;//+ ".service";
+        String doPackage = basePackage;//+ ".service";
+        String entityPackage = basePackage;//+ ".service";
         if (StringUtils.isNotBlank(module)) {
-            actionDir = actionDir ;//+ "\\" + module;
+            actionDir = actionDir;//+ "\\" + module;
             actionPackage = actionPackage + "." + module;
             servicePackage = servicePackage + "." + module;
             doPackage = doPackage + "." + module;
@@ -822,7 +822,7 @@ public class AutoCreateCode {
     private void createBizFile(String basePackage, String module, String tableName, List<Field> list, boolean override) throws IOException {
 
         // 数据对象(DO)
-        String bizPackage = basePackage ;//+ ".service";
+        String bizPackage = basePackage;//+ ".service";
         String bizDir = baseDir + StringUtils.replace(bizPackage, ".", "\\");
         if (StringUtils.isNotBlank(module)) {
             bizDir = bizDir + "\\" + module;
@@ -856,6 +856,7 @@ public class AutoCreateCode {
         private String type;
         private String comment;
         private String column;
+
         public Field(String name, String type, String comment) {
             super();
             this.column = name;
@@ -866,7 +867,8 @@ public class AutoCreateCode {
 
         private String StrChange(String name) {
             StringBuffer result = new StringBuffer();
-            name = name.toLowerCase();
+            //大写转小写
+            //name = name.toLowerCase();
             if (name.indexOf("_") > 0) {
                 String[] names = name.split("_");
                 for (int i = 0; i < names.length; i++) {
@@ -911,10 +913,10 @@ public class AutoCreateCode {
         /**
          * column
          *
-         * @return  the column
-         * @since   CodingExample Ver 1.0
-        */
-        
+         * @return the column
+         * @since CodingExample Ver 1.0
+         */
+
         public String getColumn() {
             return column;
         }
@@ -922,10 +924,10 @@ public class AutoCreateCode {
         /**
          * column
          *
-         * @param   column    the column to set
-         * @since   CodingExample Ver 1.0
+         * @param column the column to set
+         * @since CodingExample Ver 1.0
          */
-        
+
         public void setColumn(String column) {
             this.column = column;
         }
@@ -933,10 +935,10 @@ public class AutoCreateCode {
         /**
          * name
          *
-         * @param   name    the name to set
-         * @since   CodingExample Ver 1.0
+         * @param name the name to set
+         * @since CodingExample Ver 1.0
          */
-        
+
         public void setName(String name) {
             this.name = name;
         }
@@ -944,10 +946,10 @@ public class AutoCreateCode {
         /**
          * type
          *
-         * @param   type    the type to set
-         * @since   CodingExample Ver 1.0
+         * @param type the type to set
+         * @since CodingExample Ver 1.0
          */
-        
+
         public void setType(String type) {
             this.type = type;
         }
@@ -955,10 +957,10 @@ public class AutoCreateCode {
         /**
          * comment
          *
-         * @param   comment    the comment to set
-         * @since   CodingExample Ver 1.0
+         * @param comment the comment to set
+         * @since CodingExample Ver 1.0
          */
-        
+
         public void setComment(String comment) {
             this.comment = comment;
         }
