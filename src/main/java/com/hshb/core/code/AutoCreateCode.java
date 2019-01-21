@@ -85,7 +85,7 @@ public class AutoCreateCode {
      * @param basePackage
      * @param module
      * @param tableName
-     * @param override    true表示覆盖原先的;false表示不覆盖,如果文件已存在则直接结束
+     * @param     true表示覆盖原先的;false表示不覆盖,如果文件已存在则直接结束
      */
     public void init(String basePackage, String module, String tableName) throws IOException, SQLException {
         if (StringUtils.isBlank(basePackage) || StringUtils.isBlank(tableName)) {
@@ -208,15 +208,26 @@ public class AutoCreateCode {
 
         // 判断是否有datetime类型
         boolean haveDateField = false;
+        boolean havaBigDecimal = false;
         for (Field f : list) {
-            if (StringUtils.containsIgnoreCase("datetime", f.getType())) {
+            if (StringUtils.containsIgnoreCase("datetime", f.getType()) || StringUtils.containsIgnoreCase("timestamp", f.getType()) ) {
                 haveDateField = true;
+            }
+            if (StringUtils.containsIgnoreCase("decimal", f.getType())){
+                haveDateField = true;
+            }
+            if (haveDateField && havaBigDecimal){
                 break;
             }
         }
         if (haveDateField) {
             sb.append("import java.util.Date;").append(separator);
         }
+        if (haveDateField) {
+            sb.append("import java.math.BigDecimal;").append(separator);
+        }
+
+
         sb.append(separator);
 
         sb.append("public class ").append(entityName).append(" {").append(separator).append(separator);
