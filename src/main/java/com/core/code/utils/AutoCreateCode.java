@@ -1,7 +1,7 @@
-package com.core.code;
+package com.core.code.utils;
 
-import com.core.code.utils.FileUtils;
-import com.core.code.utils.ModelTypeEnum;
+import com.core.code.enums.ModelTypeEnum;
+import com.core.code.enums.RouteColumnEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,6 +40,13 @@ public class AutoCreateCode {
 
     // 是否覆盖已有代码
     private boolean override = false;
+
+
+    /**
+     * 分库分表字段名称
+     */
+    private RouteColumnEnum routeColumn;
+
 
     private DriverManagerDataSource ds;
 
@@ -210,13 +217,13 @@ public class AutoCreateCode {
         boolean haveDateField = false;
         boolean havaBigDecimal = false;
         for (Field f : list) {
-            if (StringUtils.containsIgnoreCase("datetime", f.getType()) || StringUtils.containsIgnoreCase("timestamp", f.getType()) ) {
+            if (StringUtils.containsIgnoreCase("datetime", f.getType()) || StringUtils.containsIgnoreCase("timestamp", f.getType())) {
                 haveDateField = true;
             }
-            if (StringUtils.containsIgnoreCase("decimal", f.getType())){
+            if (StringUtils.containsIgnoreCase("decimal", f.getType())) {
                 haveDateField = true;
             }
-            if (haveDateField && havaBigDecimal){
+            if (haveDateField && havaBigDecimal) {
                 break;
             }
         }
@@ -413,8 +420,24 @@ public class AutoCreateCode {
             sb.append(separator);
         }
         String columns = list.stream().map(Field::getName).collect(Collectors.joining(","));
-        sb.append("    @Select(\"SELECT "+columns+" FROM " + tableName + " WHERE id = #{id}\")").append(separator);
-        sb.append("    " + doName + " getById(@Param(\"id\") Integer id);").append(separator);
+        List<Field> collect = list.stream().filter(e -> "id".equals(e.getName())).collect(Collectors.toList());
+        String columnsIdType = "Integer";
+        if (!collect.isEmpty()){
+            String type = collect.get(0).getType();
+            if (Objects.equals(type,"BIGINT")){
+                columnsIdType = "Long";
+            }
+        }
+
+        String routeColumnSql = "";
+        String routeColumnParam = "";
+        if (this.routeColumn != null) {
+            routeColumnSql = " AND " + this.routeColumn.getColumn() + " = #{" + this.routeColumn.getProperty() + "}";
+            routeColumnParam = ", @Param(\"" + this.routeColumn.getProperty() + "\") " + this.routeColumn.getPropertyType() + " " + this.routeColumn.getProperty();
+        }
+
+        sb.append("    @Select(\"SELECT " + columns + " FROM " + tableName + " WHERE id = #{id} " + routeColumnSql + "\")").append(separator);
+        sb.append("    " + doName + " getById(@Param(\"id\") " + columnsIdType + " id" + routeColumnParam + ");").append(separator);
         sb.append(separator);
 
 
@@ -441,15 +464,20 @@ public class AutoCreateCode {
         sb.append(separator);
         sb.append(separator);
 
-        // DELETE
-        sb.append("    @Delete(\"DELETE FROM " + tableName + " WHERE id = #{id}\")").append(separator);
-        sb.append("    Integer deleteById(@Param(\"id\") Integer id);").append(separator);
+        //物理删除 DELETE
+        sb.append("    @Delete(\"DELETE FROM " + tableName + " WHERE id = #{id}" + routeColumnSql + "\")").append(separator);
+        sb.append("    Integer deleteById(@Param(\"id\") " + columnsIdType + " id " + routeColumnParam + ");").append(separator);
+        sb.append(separator);
+
+        // 逻辑删除
+        sb.append("    @Update(\"UPDATE " + tableName + " SET delete_flag = 1 WHERE id = #{id}" + routeColumnSql + "\")").append(separator);
+        sb.append("    Integer removeById(@Param(\"id\") " + columnsIdType + " id " + routeColumnParam + ");").append(separator);
         sb.append(separator);
 
         // UPDATE
         sb.append("    @UpdateProvider(type = " + providerName + ".class, method = \"update\")").append(separator);
         sb.append("    Integer update(@Param(\"" + doVariable + "\") " + this.tableNameTransfer(tableName, true) + "DO " + " " + this.tableNameTransfer(tableName, false) + ");")
-            .append(separator);
+                .append(separator);
         sb.append(separator);
 
         if (flag) {
@@ -989,6 +1017,14 @@ public class AutoCreateCode {
 
     public void setCreateBiz(boolean isCreateBiz) {
         this.isCreateBiz = isCreateBiz;
+    }
+
+    public RouteColumnEnum getRouteColumn() {
+        return routeColumn;
+    }
+
+    public void setRouteColumn(RouteColumnEnum routeColumn) {
+        this.routeColumn = routeColumn;
     }
 
     public void setCreateService(boolean isCreateService) {

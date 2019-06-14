@@ -1,4 +1,4 @@
-package com.core.code.utils;
+package com.core.code.enums;
 
 /**
  * @author mincc
