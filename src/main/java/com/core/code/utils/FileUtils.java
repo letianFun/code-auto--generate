@@ -1,4 +1,4 @@
-package com.hshb.core.code.utils;
+package com.core.code.utils;
 
 import com.google.common.base.Strings;
 

@@ -1,7 +1,7 @@
-package com.hshb.core.code;
+package com.core.code;
 
-import com.hshb.core.code.utils.FileUtils;
-import com.hshb.core.code.utils.ModelTypeEnum;
+import com.core.code.utils.FileUtils;
+import com.core.code.utils.ModelTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AutoCreateCode {
 
@@ -85,7 +86,6 @@ public class AutoCreateCode {
      * @param basePackage
      * @param module
      * @param tableName
-     * @param     true表示覆盖原先的;false表示不覆盖,如果文件已存在则直接结束
      */
     public void init(String basePackage, String module, String tableName) throws IOException, SQLException {
         if (StringUtils.isBlank(basePackage) || StringUtils.isBlank(tableName)) {
@@ -413,7 +413,8 @@ public class AutoCreateCode {
         }
 
         // getById
-        sb.append("    @Select(\"SELECT * FROM " + tableName + " WHERE id = #{id}\")").append(separator);
+        String columns = list.stream().map(Field::getName).collect(Collectors.joining(","));
+        sb.append("    @Select(\"SELECT "+columns+" FROM " + tableName + " WHERE id = #{id}\")").append(separator);
         sb.append("    " + doName + " getById(@Param(\"id\") int id);").append(separator);
         sb.append(separator);
 
