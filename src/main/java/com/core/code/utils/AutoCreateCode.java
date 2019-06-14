@@ -328,7 +328,7 @@ public class AutoCreateCode {
     private boolean getUpperColumn(List<Field> list, StringBuffer sb) {
         sb.reverse();
         boolean result = false;
-        sb.append("    @Results({");
+        sb.append("    @Results(id = \"baseInfo\", value ={");
         int j = 0;
         for (int i = 0; i < list.size(); i++) {
             Field f = list.get(i);
