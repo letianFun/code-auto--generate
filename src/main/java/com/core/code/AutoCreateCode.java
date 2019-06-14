@@ -394,6 +394,7 @@ public class AutoCreateCode {
         sb.append("import org.apache.ibatis.annotations.Results;").append(separator);
         sb.append("import org.apache.ibatis.annotations.SelectProvider;").append(separator);
         sb.append("import org.apache.ibatis.annotations.UpdateProvider;").append(separator);
+        sb.append("import org.springframework.stereotype.Repository;").append(separator);
         sb.append("import " + entityPackage + ".").append(doName).append(";").append(separator);
         sb.append("import " + providerPackage + ".").append(providerName).append(";").append(separator);
         sb.append(separator);
@@ -401,7 +402,7 @@ public class AutoCreateCode {
         sb.append("import java.util.List;").append(separator);
 
         sb.append(separator);
-
+        sb.append("@Repository").append(separator);
         sb.append("public interface ").append(daoName).append(" {").append(separator).append(separator);
 
         StringBuffer sb1 = new StringBuffer();
@@ -411,11 +412,9 @@ public class AutoCreateCode {
             sb.append(sb1.toString());
             sb.append(separator);
         }
-
-        // getById
         String columns = list.stream().map(Field::getName).collect(Collectors.joining(","));
         sb.append("    @Select(\"SELECT "+columns+" FROM " + tableName + " WHERE id = #{id}\")").append(separator);
-        sb.append("    " + doName + " getById(@Param(\"id\") int id);").append(separator);
+        sb.append("    " + doName + " getById(@Param(\"id\") Integer id);").append(separator);
         sb.append(separator);
 
 
@@ -444,13 +443,13 @@ public class AutoCreateCode {
 
         // DELETE
         sb.append("    @Delete(\"DELETE FROM " + tableName + " WHERE id = #{id}\")").append(separator);
-        sb.append("    int deleteById(@Param(\"id\") int id);").append(separator);
+        sb.append("    Integer deleteById(@Param(\"id\") Integer id);").append(separator);
         sb.append(separator);
 
         // UPDATE
         sb.append("    @UpdateProvider(type = " + providerName + ".class, method = \"update\")").append(separator);
-        sb.append("    int update(@Param(\"" + doVariable + "\") " + this.tableNameTransfer(tableName, true) + "DO " + " " + this.tableNameTransfer(tableName, false) + ");")
-                .append(separator);
+        sb.append("    Integer update(@Param(\"" + doVariable + "\") " + this.tableNameTransfer(tableName, true) + "DO " + " " + this.tableNameTransfer(tableName, false) + ");")
+            .append(separator);
         sb.append(separator);
 
         if (flag) {
@@ -609,6 +608,7 @@ public class AutoCreateCode {
         sb.append("import org.slf4j.LoggerFactory;").append(separator);
         sb.append("import org.springframework.beans.factory.annotation.Autowired;").append(separator);
         sb.append("import org.springframework.stereotype.Service;").append(separator);
+        sb.append("import org.springframework.transaction.annotation.Transactional;").append(separator);
         sb.append("import " + daoPackage + "." + daoName + ";").append(separator);
         sb.append("import " + doPackage + "." + doName + ";").append(separator);
 
@@ -640,7 +640,7 @@ public class AutoCreateCode {
         sb.append(" // 添加").append(separator);
         sb.append(ANNOTATION_SB).append(separator);
         sb.append("@Transactional").append(separator);
-        sb.append(" public " + doName + " doAdd (" + doName + " " + doVariable + ",int loginUserId) {").append(separator);
+        sb.append(" public " + doName + " doAdd (" + doName + " " + doVariable + ",Integer loginUserId) {").append(separator);
         sb.append("     logger.info(\"开始添加" + serviceName + ".add," + doVariable + "=\" + " + doVariable + ".toString());").append(separator);
         //sb.append("     ResultDTO<Integer> result = new ResultDTO<>();").append(separator);
         //sb.append(separator);
@@ -665,7 +665,7 @@ public class AutoCreateCode {
         //sb.append("     ResultDTO<Integer> result = new ResultDTO<>();").append(separator);
         //sb.append(separator);
         //sb.append(separator);
-        sb.append("     int rows=this." + daoVariable + ".update(" + doVariable + ");").append(separator);
+        sb.append("     Integer rows=this." + daoVariable + ".update(" + doVariable + ");").append(separator);
 
         sb.append("     return rows;").append(separator);
         sb.append(" }").append(separator);
@@ -678,7 +678,7 @@ public class AutoCreateCode {
         //sb.append("     ResultDTO<Integer> result = new ResultDTO<>();").append(separator);
         //sb.append(separator);
         //sb.append(separator);
-        sb.append("     int rows=this." + daoVariable + ".deleteById(" + doVariable + ".getId());").append(separator);
+        sb.append("     Integer rows=this." + daoVariable + ".deleteById(" + doVariable + ".getId());").append(separator);
 
         sb.append("     return rows;").append(separator);
         sb.append(" }").append(separator);
